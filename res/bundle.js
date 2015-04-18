@@ -743,11 +743,11 @@
 			}
 		}
 	},
-	"ld31": {
+	"missilewar": {
 		"res": {
 			"dependencies.js": function (exports, module, require) {
 				domjs = require('domjs/lib/html5')(document);
 			}
 		}
 	}
-})("ld31/res/dependencies");
+})("missilewar/res/dependencies");
