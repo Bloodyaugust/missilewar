@@ -1,6 +1,12 @@
 {
     "images": [
-        "/img/background.png"
+        "/img/background.png",
+        "/img/tile.png",
+        "/img/tile-active.png",
+        "/img/tile-active.png",
+        "/img/booster-small.png",
+        "/img/generator-basic.png",
+        "/img/silo-rocket.png"
     ],
 
     "sounds": [
@@ -15,12 +21,89 @@
 
     },
 
-    "ships": {
+    "platforms": {
         "basic": [
             {"x": 0, "y": 0},
             {"x": 1, "y": 1},
             {"x": 0, "y": 1},
-            {"x": 1, "y": 0}
+            {"x": -1, "y": 1},
+            {"x": -2, "y": 2},
+            {"x": -1, "y": 2},
+            {"x": 0, "y": 2},
+            {"x": 1, "y": 2},
+            {"x": 2, "y": 2},
+            {"x": -3, "y": 3},
+            {"x": -2, "y": 3},
+            {"x": -1, "y": 3},
+            {"x": 0, "y": 3},
+            {"x": 1, "y": 3},
+            {"x": 2, "y": 3},
+            {"x": 3, "y": 3}
         ]
+    },
+
+    "buildings": {
+        "silos": {
+            "rocket": {
+                "reload": 5,
+                "cost": 100,
+                "health": 100,
+                "display": "Rocket Silo",
+                "autofire": "rocket",
+                "fires": ["rocket", "hrocket"]
+            }
+        },
+        "boosters": {
+            "small": {
+                "interval": 4.5,
+                "amount": 15,
+                "cost": 50,
+                "health": 50,
+                "upgrades": ["basic", "small-fast"],
+                "display": "Small Shield Booster"
+            },
+            "small-fast": {
+                "interval": 2,
+                "amount": 9,
+                "cost": 85,
+                "health": 50,
+                "upgrades": [],
+                "display": "Fast Small Shield Booster"
+            },
+            "basic": {
+                "interval": 4,
+                "amount": 40,
+                "cost": 150,
+                "health": 200,
+                "upgrades": [],
+                "display": "Shield Booster"
+            }
+        },
+        "generators": {
+            "basic": {
+                "interval": 5,
+                "amount": 10,
+                "cost": 500,
+                "health": 200,
+                "display": "Generator"
+            }
+        }
+    },
+
+    "projectiles": {
+        "rocket": {
+            "speed": 60,
+            "cost": 5,
+            "health": 5,
+            "damage": 15,
+            "display": "Rocket"
+        },
+        "hrocket": {
+            "speed": 45,
+            "cost": 15,
+            "health": 20,
+            "damage": 55,
+            "display": "High-Yield Rocket"
+        }
     }
 }

@@ -35,7 +35,6 @@ body {
   -webkit-user-select: none;
   cursor: default;
   width: 100%;
-  min-height: 800px;
   margin: auto;
 }
 body > .content {
@@ -56,7 +55,6 @@ a:visited {
   background-color: #000000;
   display: block;
   margin: 0 auto;
-  cursor: none !important;
 }
 
 .header {
