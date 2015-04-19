@@ -103,6 +103,7 @@ function Projectile (config) {
 	_this.sprite.position = config.position.clone();
 	_this.sprite.origin = new Vec2(_this.sprite.texture.width / 2, _this.sprite.texture.height / 2);
 	_this.sprite.rotation = config.rotation;
+	_this.sprite.shader = new ColorReplaceFilter(0xFFFFFF, 0xFF0000, 0.1);
 	_this.collider = new SL.Circle(_this.sprite.origin.getTranslated(new SL.Vec2(0, -_this.sprite.texture.height / 2)).rotate(_this.sprite.origin, _this.sprite.rotation), 2);
 	_this.silo = config.silo;
 	_this.state = 'idle';
@@ -188,7 +189,7 @@ function Building (config) {
 	}
 
 	_this.update = function () {
-		
+
 	};
 }
 
@@ -237,3 +238,69 @@ function Player () {
 		}
 	}
 }
+
+var ColorReplaceFilter = function (findColor, replaceWithColor, range) {
+	PIXI.AbstractFilter.call(this);
+
+	this.uniforms = {
+		findColor: {type: '3f', value: null},
+		replaceWithColor: {type: '3f', value: null},
+		range: {type: '1f', value: null}
+	};
+
+	this.findColor = findColor;
+	this.replaceWithColor = replaceWithColor;
+	this.range = range;
+
+	this.passes = [this];
+
+	this.fragmentSrc = [
+	'precision mediump float;',
+	'varying vec2 vTextureCoord;',
+	'uniform sampler2D texture;',
+	'uniform vec3 findColor;',
+	'uniform vec3 replaceWithColor;',
+	'uniform float range;',
+	'void main(void) {',
+	'  vec4 currentColor = texture2D(texture, vTextureCoord);',
+	'  vec3 colorDiff = findColor - (currentColor.rgb / max(currentColor.a, 0.0000000001));',
+	'  float colorDistance = length(colorDiff);',
+	'  float doReplace = step(colorDistance, range);',
+	'  gl_FragColor = vec4(mix(currentColor.rgb, (replaceWithColor + colorDiff) * currentColor.a, doReplace), currentColor.a);',
+	'}'
+	];
+
+	//console.log(this.fragmentSrc.join(''));
+};
+
+ColorReplaceFilter.prototype = Object.create(PIXI.AbstractFilter.prototype);
+ColorReplaceFilter.prototype.constructor = ColorReplaceFilter;
+
+
+Object.defineProperty(ColorReplaceFilter.prototype, 'findColor', {
+	set: function (value) {
+		var r = ((value & 0xFF0000) >> 16) / 255,
+		g = ((value & 0x00FF00) >> 8) / 255,
+		b = (value & 0x0000FF) / 255;
+		this.uniforms.findColor.value = {x: r, y: g, z: b};
+		this.dirty = true;
+	}
+});
+
+Object.defineProperty(ColorReplaceFilter.prototype, 'replaceWithColor', {
+	set: function (value) {
+		var r = ((value & 0xFF0000) >> 16) / 255,
+		g = ((value & 0x00FF00) >> 8) / 255,
+		b = (value & 0x0000FF) / 255;
+		this.uniforms.replaceWithColor.value = {x: r, y: g, z: b};
+		this.dirty = true;
+	}
+});
+
+
+Object.defineProperty(ColorReplaceFilter.prototype, 'range', {
+	set: function (value) {
+		this.uniforms.range.value = value;
+		this.dirty = true;
+	}
+});
