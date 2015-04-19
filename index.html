@@ -35,6 +35,44 @@
         <div class="canvas-container">
             <canvas id="GameCanvas" width="800" height="600"></canvas>
         </div>
+        <div class="game-ui">
+            <div class="platform-stats">
+                <div class="stats-item">Game Time: <span id="play-time">1:38</span></div>
+                <div class="stats-item">Shield: <span id="player-platform-shield">500</span></div>
+                <div class="stats-item">Energy: <span id="player-platform-energy">50</span></div>
+            </div>
+            <div class="selection-stats">
+                <img src="res/img/silo-rocket.png" />
+                <div class="selection-stats-text">
+                    <div class="stats-item"><span id="selection-display">Rocket Silo</span></div>
+                    <div class="stats-item">Health: <span id="selection-health">150</span></div>
+                    <div class="stats-item">Interval: <span id="selection-interval">5</span></div>
+                    <div class="stats-item">Amount: <span id="selection-amount">1</span></div>
+                </div>
+            </div>
+            <div class="build-options">
+                <div class="build-option">
+                    <img src="res/img/projectile-rocket.png" />
+                    <div class="build-option-info">
+                        <div class="stats-item"><span id="build-option-display">Rocket</span></div>
+                        <div class="stats-item">Damage: <span id="build-option-damage">100</span></div>
+                        <div class="stats-item">Health: <span id="build-option-health">10</span></div>
+                        <div class="stats-item">Cost: <span id="build-option-cost">10</span></div>
+                        <div class="stats-item">Speed: <span id="build-option-speed">60</span></div>
+                    </div>
+                </div>
+                <div class="build-option">
+                    <img src="res/img/projectile-hrocket.png" />
+                    <div class="build-option-info">
+                        <div class="stats-item"><span id="build-option-display">High-Yield Rocket</span></div>
+                        <div class="stats-item">Damage: <span id="build-option-damage">1000</span></div>
+                        <div class="stats-item">Health: <span id="build-option-health">20</span></div>
+                        <div class="stats-item">Cost: <span id="build-option-cost">50</span></div>
+                        <div class="stats-item">Speed: <span id="build-option-speed">60</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     </body>
 </html>

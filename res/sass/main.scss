@@ -8,7 +8,7 @@ $ui-highlight: #4DB8FF;
 $ui-inactive: #A60000;
 $ui-active: #990000;
 $background-color: black;
-$background-color-light: grey;
+$background-color-light: #898989;
 $background-color-alt: black;
 
 //Footer
@@ -157,4 +157,44 @@ a:hover {
 .modal .button:hover {
   opacity: 1 !important;
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, $ui-active), color-stop(100%, darken($ui-active, 10%)));
+}
+
+.game-ui {
+    position: absolute;
+    top: 0;
+    background: linear-gradient(darken($background-color-light, 20%), darken($background-color-light, 30%));
+    padding: 10px;
+    border-right: 4px solid $ui-highlight;
+    border-bottom: 4px solid $ui-highlight;
+    border-radius: 4px;
+}
+
+.platform-stats {
+    #player-platform-shield,
+    #player-platform-energy {
+        font-weight: bold;
+    }
+}
+
+.selection-stats {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid $ui-highlight;
+}
+
+.build-options {
+    margin-top: 20px;
+    border-top: 1px solid $ui-highlight;
+}
+
+.build-option {
+    margin-top: 10px;
+    border: 4px solid $ui-highlight;
+    border-radius: 4px;
+    padding: 5px;
+    cursor: pointer;
+}
+.build-option:hover {
+    background-color: darken($background-color-light, 10%);
+    border-color: darken($ui-highlight, 10%);
 }

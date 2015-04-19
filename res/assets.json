@@ -6,7 +6,9 @@
         "/img/tile-active.png",
         "/img/booster-small.png",
         "/img/generator-basic.png",
-        "/img/silo-rocket.png"
+        "/img/silo-rocket.png",
+        "/img/projectile-rocket.png",
+        "/img/projectile-hrocket.png"
     ],
 
     "sounds": [
