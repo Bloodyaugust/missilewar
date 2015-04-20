@@ -181,6 +181,7 @@ function Building (config) {
 	_this.tile = config.tile;
 	_this.type = config.type;
 	_this.state = 'idle';
+	_this.collider = new SL.Circle(_this.tile.collider.origin, TILE_SIZE.x / 2);
 
 	for (var key in assetConfig) {
 		if (assetConfig.hasOwnProperty(key)) {
@@ -205,6 +206,7 @@ function Platform (config) {
 	_this.tiles = config.tiles || [];
 	_this.corePosition = config.position.clone();
 	_this.collider = new SL.Circle(_this.corePosition, PLATFORM_SHIELD_SIZE);
+	_this.rotation = config.rotation || 0;
 
 	for (var i = 0; i < typeBase.length; i++) {
 		_this.tiles.push(new Tile({
@@ -227,16 +229,50 @@ function Platform (config) {
 function Player () {
 	var _this = this;
 
+	_this.buildings = app.assetCollection.assets.buildings;
+	_this.selection = null;
+	_this.previousSelection = null;
+	_this.uiRequests = [];
+
 	_this.update = function () {
-		var mouseCollider = new SL.Rect(app.mouseLocation.getTranslated(app.currentScene.camera.position.getScaled(-1)), new SL.Vec2(1, 1)),
-			tiles = app.currentScene.getEntitiesByTag('tile');
+		var mouseCollider = {
+				rect: new SL.Rect(app.mouseLocation.getTranslated(app.currentScene.camera.position.getScaled(-1)), new SL.Vec2(1, 1)),
+				circle: new SL.Circle(app.mouseLocation.getTranslated(app.currentScene.camera.position.getScaled(-1)), 1)
+			},
+			tiles = app.currentScene.getEntitiesByTag('tile'),
+			hoverTile;
 
 		for (var i = 0; i < tiles.length; i++) {
-			if (mouseCollider.intersects(tiles[i].collider)) {
+			if (mouseCollider.rect.intersects(tiles[i].collider)) {
 				tiles[i].state = 'active';
+				hoverTile = tiles[i];
+				break;
 			}
 		}
+
+		if (app.onMouseUp() && hoverTile && (!_this.selection || _this.selection.entityID !== hoverTile.entityID)) {
+			if (hoverTile.building && (!_this.selection || _this.selection.entityID !== hoverTile.building.entityID)) {
+				_this.previousSelection = _this.selection ? _this.selection : null;
+				_this.selection = hoverTile.building;
+			} else {
+				_this.previousSelection = _this.selection ? _this.selection : null;
+				_this.selection = hoverTile;
+			}
+			_this.updateUI();
+		}
 	}
+
+	_this.updateUI = function () {
+		if (_this.selection.building) {
+
+		} else {
+
+		}
+	};
+
+	_this.requestUIUpdate = function () {
+
+	};
 }
 
 var ColorReplaceFilter = function (findColor, replaceWithColor, range) {
