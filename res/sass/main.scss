@@ -164,12 +164,13 @@ a:hover {
     bottom: 0;
     right: 0;
     width: 400px;
-    height: 250px;
+    height: 258px;
     background: linear-gradient(darken($background-color-light, 20%), darken($background-color-light, 30%));
     padding: 10px;
     border-top: 4px solid $ui-highlight;
     border-left: 4px solid $ui-highlight;
     border-radius: 4px;
+    display: none;
 }
 .game-ui > div {
     float: left;
@@ -199,6 +200,12 @@ a:hover {
     width: 100px;
 }
 
+.selection-item {
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
 .build-options {
     margin-top: 20px;
     border-top: 1px solid $ui-highlight;
@@ -213,6 +220,11 @@ a:hover {
     padding: 5px;
     cursor: pointer;
     float: left;
+    display: none;
+
+    img {
+        max-width: 48px;
+    }
 }
 .build-option:hover {
     background-color: darken($background-color-light, 10%);

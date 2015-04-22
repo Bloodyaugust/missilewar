@@ -22,14 +22,6 @@
                 div(
                     {'class': 'button', 'id': 'game', 'onClick': 'logPlay();'},
                     'Play'
-                ),
-                div(
-                    {'class': 'button', 'id': 'settings'},
-                    'Settings'
-                ),
-                div(
-                    {'class': 'button', 'id': 'about'},
-                    'About'
                 )
             )
         },

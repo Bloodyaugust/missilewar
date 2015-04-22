@@ -4,8 +4,11 @@
         "/img/tile.png",
         "/img/tile-active.png",
         "/img/tile-active.png",
+        "/img/command.png",
         "/img/booster-small.png",
-        "/img/generator-basic.png",
+        "/img/booster-basic.png",
+        "/img/booster-fast.png",
+        "/img/generator-solar.png",
         "/img/silo-rocket.png",
         "/img/projectile-rocket.png",
         "/img/projectile-hrocket.png"
@@ -31,13 +34,13 @@
             {"x": -1, "y": 1},
             {"x": -2, "y": 2},
             {"x": -1, "y": 2},
-            {"x": 0, "y": 2},
+            {"x": 0, "y": 2, "building": "generator-solar"},
             {"x": 1, "y": 2},
             {"x": 2, "y": 2},
             {"x": -3, "y": 3},
             {"x": -2, "y": 3},
             {"x": -1, "y": 3},
-            {"x": 0, "y": 3},
+            {"x": 0, "y": 3, "building": "command"},
             {"x": 1, "y": 3},
             {"x": 2, "y": 3},
             {"x": 3, "y": 3}
@@ -45,7 +48,7 @@
     },
 
     "buildings": {
-        "silos": {
+        "silo": {
             "rocket": {
                 "reload": 5,
                 "cost": 100,
@@ -55,24 +58,24 @@
                 "fires": ["rocket", "hrocket"]
             }
         },
-        "boosters": {
+        "booster": {
             "small": {
                 "interval": 4.5,
                 "amount": 15,
                 "cost": 50,
                 "health": 50,
-                "upgrades": ["basic", "small-fast"],
+                "upgrades": ["basic"],
                 "display": "Small Shield Booster"
             },
-            "small-fast": {
-                "interval": 2,
-                "amount": 9,
-                "cost": 85,
-                "health": 50,
-                "upgrades": [],
-                "display": "Fast Small Shield Booster"
-            },
             "basic": {
+                "interval": 4,
+                "amount": 40,
+                "cost": 150,
+                "health": 200,
+                "upgrades": ["fast"],
+                "display": "Shield Booster"
+            },
+            "fast": {
                 "interval": 4,
                 "amount": 40,
                 "cost": 150,
@@ -81,7 +84,7 @@
                 "display": "Shield Booster"
             }
         },
-        "generators": {
+        "generator": {
             "basic": {
                 "interval": 5,
                 "amount": 10,
@@ -89,6 +92,10 @@
                 "health": 200,
                 "display": "Generator"
             }
+        },
+        "command": {
+            "health": 1000,
+            "display": "Command Center"
         }
     },
 

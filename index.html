@@ -42,16 +42,63 @@
                 <div class="stats-item">Energy: <span id="player-platform-energy">50</span></div>
             </div>
             <div class="selection-stats">
-                <img src="res/img/silo-rocket.png" />
-                <div class="selection-stats-text">
-                    <div class="stats-item"><span id="selection-display">Rocket Silo</span></div>
-                    <div class="stats-item">Health: <span id="selection-health">150</span></div>
-                    <div class="stats-item">Interval: <span id="selection-interval">5</span></div>
-                    <div class="stats-item">Amount: <span id="selection-amount">1</span></div>
+                <div class="selection-item" id="selection-item-silo-rocket">
+                    <img src="res/img/silo-rocket.png" />
+                    <div class="selection-stats-text">
+                        <div class="stats-item"><span class="selection-display">Rocket Silo</span></div>
+                        <div class="stats-item">Health: <span class="selection-health">150</span></div>
+                        <div class="stats-item">Interval: <span class="selection-interval">5</span></div>
+                        <div class="stats-item">Amount: <span class="selection-amount">1</span></div>
+                    </div>
+                </div>
+                <div class="selection-item" id="selection-item-booster-small">
+                    <img src="res/img/booster-small.png" />
+                    <div class="selection-stats-text">
+                        <div class="stats-item"><span class="selection-display">Small Shield Booster</span></div>
+                        <div class="stats-item">Health: <span class="selection-health">150</span></div>
+                        <div class="stats-item">Interval: <span class="selection-interval">5</span></div>
+                        <div class="stats-item">Amount: <span class="selection-amount">1</span></div>
+                    </div>
+                </div>
+                <div class="selection-item" id="selection-item-booster-basic">
+                    <img src="res/img/booster-basic.png" />
+                    <div class="selection-stats-text">
+                        <div class="stats-item"><span class="selection-display">Basic Shield Booster</span></div>
+                        <div class="stats-item">Health: <span class="selection-health">150</span></div>
+                        <div class="stats-item">Interval: <span class="selection-interval">5</span></div>
+                        <div class="stats-item">Amount: <span class="selection-amount">1</span></div>
+                    </div>
+                </div>
+                <div class="selection-item" id="selection-item-booster-fast">
+                    <img src="res/img/booster-fast.png" />
+                    <div class="selection-stats-text">
+                        <div class="stats-item"><span class="selection-display">Fast Shield Booster</span></div>
+                        <div class="stats-item">Health: <span class="selection-health">150</span></div>
+                        <div class="stats-item">Interval: <span class="selection-interval">5</span></div>
+                        <div class="stats-item">Amount: <span class="selection-amount">1</span></div>
+                    </div>
+                </div>
+                <div class="selection-item" id="selection-item-generator-solar">
+                    <img src="res/img/generator-solar.png" />
+                    <div class="selection-stats-text">
+                        <div class="stats-item"><span class="selection-display">Solar Energy Generator</span></div>
+                        <div class="stats-item">Health: <span class="selection-health">150</span></div>
+                        <div class="stats-item">Interval: <span class="selection-interval">5</span></div>
+                        <div class="stats-item">Amount: <span class="selection-amount">1</span></div>
+                    </div>
+                </div>
+                <div class="selection-item" id="selection-item-command">
+                    <img src="res/img/command.png" />
+                    <div class="selection-stats-text">
+                        <div class="stats-item"><span class="selection-display">Command Station</span></div>
+                        <div class="stats-item">Health: <span class="selection-health">150</span></div>
+                        <div class="stats-item">Interval: <span class="selection-interval">5</span></div>
+                        <div class="stats-item">Amount: <span class="selection-amount">1</span></div>
+                    </div>
                 </div>
             </div>
             <div class="build-options">
-                <div class="build-option projectile-rocket">
+                <div class="build-option projectile-rocket" id="build-option-projectile-rocket" data-type="projectile" data-subtype="rocket">
                     <img src="res/img/projectile-rocket.png" />
                     <div class="build-option-info">
                         <div class="stats-item"><span class="build-option-display">Rocket</span></div>
@@ -61,7 +108,7 @@
                         <div class="stats-item">Speed: <span class="build-option-speed">60</span></div>
                     </div>
                 </div>
-                <div class="build-option projectile-hrocket">
+                <div class="build-option projectile-hrocket" id="build-option-projectile-hrocket" data-type="projectile" data-subtype="hrocket">
                     <img src="res/img/projectile-hrocket.png" />
                     <div class="build-option-info">
                         <div class="stats-item"><span class="build-option-display">High-Yield Rocket</span></div>
@@ -71,50 +118,50 @@
                         <div class="stats-item">Speed: <span class="build-option-speed">60</span></div>
                     </div>
                 </div>
-                <div class="build-option projectile-hrocket">
-                    <img src="res/img/projectile-hrocket.png" />
+                <div class="build-option building-booster-small" id="build-option-booster-small" data-type="booster" data-subtype="small">
+                    <img src="res/img/booster-small.png" />
                     <div class="build-option-info">
-                        <div class="stats-item"><span class="build-option-display">High-Yield Rocket</span></div>
+                        <div class="stats-item"><span class="build-option-display">Build Small Shield Booster</span></div>
                         <div class="stats-item">Damage: <span class="build-option-damage">1000</span></div>
                         <div class="stats-item">Health: <span class="build-option-health">20</span></div>
                         <div class="stats-item">Cost: <span class="build-option-cost">50</span></div>
                         <div class="stats-item">Speed: <span class="build-option-speed">60</span></div>
                     </div>
                 </div>
-                <div class="build-option projectile-hrocket">
-                    <img src="res/img/projectile-hrocket.png" />
+                <div class="build-option building-booster-basic" id="build-option-booster-basic" data-type="booster" data-subtype="basic">
+                    <img src="res/img/booster-basic.png" />
                     <div class="build-option-info">
-                        <div class="stats-item"><span class="build-option-display">High-Yield Rocket</span></div>
+                        <div class="stats-item"><span class="build-option-display">Upgrade to Basic Shield Booster</span></div>
                         <div class="stats-item">Damage: <span class="build-option-damage">1000</span></div>
                         <div class="stats-item">Health: <span class="build-option-health">20</span></div>
                         <div class="stats-item">Cost: <span class="build-option-cost">50</span></div>
                         <div class="stats-item">Speed: <span class="build-option-speed">60</span></div>
                     </div>
                 </div>
-                <div class="build-option projectile-hrocket">
-                    <img src="res/img/projectile-hrocket.png" />
+                <div class="build-option building-booster-fast" id="build-option-booster-fast" data-type="booster" data-subtype="fast">
+                    <img src="res/img/booster-fast.png" />
                     <div class="build-option-info">
-                        <div class="stats-item"><span class="build-option-display">High-Yield Rocket</span></div>
+                        <div class="stats-item"><span class="build-option-display">Upgrade to Fast Shield Booster</span></div>
                         <div class="stats-item">Damage: <span class="build-option-damage">1000</span></div>
                         <div class="stats-item">Health: <span class="build-option-health">20</span></div>
                         <div class="stats-item">Cost: <span class="build-option-cost">50</span></div>
                         <div class="stats-item">Speed: <span class="build-option-speed">60</span></div>
                     </div>
                 </div>
-                <div class="build-option projectile-hrocket">
-                    <img src="res/img/projectile-hrocket.png" />
+                <div class="build-option building-silo-rocket" id="build-option-silo-rocket" data-type="silo" data-subtype="rocket">
+                    <img src="res/img/silo-rocket.png" />
                     <div class="build-option-info">
-                        <div class="stats-item"><span class="build-option-display">High-Yield Rocket</span></div>
+                        <div class="stats-item"><span class="build-option-display">Build Rocket Silo</span></div>
                         <div class="stats-item">Damage: <span class="build-option-damage">1000</span></div>
                         <div class="stats-item">Health: <span class="build-option-health">20</span></div>
                         <div class="stats-item">Cost: <span class="build-option-cost">50</span></div>
                         <div class="stats-item">Speed: <span class="build-option-speed">60</span></div>
                     </div>
                 </div>
-                <div class="build-option projectile-hrocket">
-                    <img src="res/img/projectile-hrocket.png" />
+                <div class="build-option building-generator-solar" id="build-option-generator-solar" data-type="generator" data-subtype="solar">
+                    <img src="res/img/generator-solar.png" />
                     <div class="build-option-info">
-                        <div class="stats-item"><span class="build-option-display">High-Yield Rocket</span></div>
+                        <div class="stats-item"><span class="build-option-display">Build Solar Generator</span></div>
                         <div class="stats-item">Damage: <span class="build-option-damage">1000</span></div>
                         <div class="stats-item">Health: <span class="build-option-health">20</span></div>
                         <div class="stats-item">Cost: <span class="build-option-cost">50</span></div>
