@@ -197,7 +197,7 @@ function Building (config) {
 	_this.tile = config.tile;
 	_this.type = config.type;
 	_this.subType = config.subType || null;
-	_this.sprite = new PIXI.Sprite(app.assetCollection.getTexture(config.type));
+	_this.sprite = new PIXI.Sprite(app.assetCollection.getTexture(config.subType ? config.type + '-' + config.subType : config.type));
 	_this.sprite.position = _this.tile.collider.origin.clone();
 	_this.sprite.shader = new ColorReplaceFilter(0xFFFFFF, config.platform.trim, 0.1);
 	_this.sprite.anchor = new SL.Vec2(0.5, 0.5);
@@ -218,6 +218,30 @@ function Building (config) {
 
 	_this.update = function () {
 
+	};
+
+	_this.upgrade = function (subType) {
+		var hasUpgrade = false,
+			assetConfig;
+
+		for (var i = 0; i < _this.upgrades.length; i++) {
+			if (_this.upgrades[i] === subType) {
+				hasUpgrade = true;
+				break;
+			}
+		}
+
+		if (hasUpgrade) {
+			_this.subType = subType;
+			_this.sprite.setTexture(app.assetCollection.getTexture(_this.type + '-' + _this.subType));
+			assetConfig = app.assetCollection.assets.buildings[_this.type][_this.subType];
+
+			for (var key in assetConfig) {
+				if (assetConfig.hasOwnProperty(key)) {
+					_this[key] = assetConfig[key];
+				}
+			}
+		}
 	};
 }
 
@@ -304,18 +328,30 @@ function Player () {
 			}
 		}
 
-		if (app.onMouseUp() && hoverTile && (!_this.selection || _this.selection.entityID !== hoverTile.entityID)) {
-			if (hoverTile.building && (!_this.selection || _this.selection.entityID !== hoverTile.building.entityID)) {
-				_this.previousSelection = _this.selection ? _this.selection : null;
-				_this.selection = hoverTile.building;
+		if (app.onMouseUp() && hoverTile) {
+			if (!_this.selection) {
+				if (hoverTile.building) {
+					_this.selection = hoverTile.building;
+				} else {
+					_this.selection = hoverTile;
+					hoverTile.setState('active');
+				}
+				_this.previousSelection = null;
 			} else {
-				_this.previousSelection = _this.selection ? _this.selection : null;
-				_this.selection = hoverTile;
-				hoverTile.setState('active');
+				if (hoverTile.building && _this.selection.entityID !== hoverTile.building.entityID) {
+					_this.previousSelection = _this.selection;
+					_this.selection = hoverTile.building;
+				} else {
+					if (!hoverTile.building) {
+						_this.previousSelection = _this.selection;
+						_this.selection = hoverTile;
+						_this.selection.setState('active');
+					}
+				}
 			}
 			_this.updateSelectionUI();
 
-			if (_this.previousSelection && _this.previousSelection.type === 'tile') {
+			if (_this.previousSelection && _this.previousSelection.type === 'tile' && _this.selection.entityID !== _this.previousSelection.entityID) {
 				_this.previousSelection.setState('idle');
 			}
 		}
@@ -340,6 +376,11 @@ function Player () {
 			_this.selection = newBuilding;
 
 			_this.updateSelectionUI();
+		} else if (e.currentTarget.dataset.type !== 'projectile') {
+			_this.selection.upgrade(e.currentTarget.dataset.subtype);
+			_this.previousSelection = null;
+
+			_this.updateSelectionUI();
 		}
 	};
 
@@ -357,6 +398,7 @@ function Player () {
 
 	_this.updateSelectionUI = function () {
 		$('.build-option').hide();
+		$('.selection-item').hide();
 
 		if (_this.previousSelection && _this.previousSelection.type !== 'tile') {
 			window['selection-item-' + _this.previousSelection.type + (_this.previousSelection.subType ? '-' + _this.previousSelection.subType : '')].style.display = 'none';
