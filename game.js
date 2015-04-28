@@ -78,6 +78,30 @@ function start() {
 				facing: {x: 1, y: -1},
 				trim: 0x0000FF
 			}));
+			app.currentScene.addEntity(new Platform({
+				position: new SL.Vec2(256, SCREEN_SIZE.y / 2 - 128),
+				type: 'basic',
+				facing: {x: -1, y: -1},
+				trim: 0x00FF00
+			}));
+			app.currentScene.addEntity(new Platform({
+				position: new SL.Vec2(SCREEN_SIZE.x - 256, SCREEN_SIZE.y / 2 - 128),
+				type: 'basic',
+				facing: {x: -1, y: -1},
+				trim: 0xFF2500
+			}));
+			app.currentScene.addEntity(new Platform({
+				position: new SL.Vec2(SCREEN_SIZE.x - 256, SCREEN_SIZE.y / 2 + 256),
+				type: 'basic',
+				facing: {x: -1, y: 1},
+				trim: 0x590059
+			}));
+			app.currentScene.addEntity(new Platform({
+				position: new SL.Vec2(256, SCREEN_SIZE.y / 2 + 256),
+				type: 'basic',
+				facing: {x: -1, y: 1},
+				trim: 0xFFFF00
+			}));
 			app.currentScene.addEntity(new Player());
 
 			app.currentScene.stage.setBackgroundColor(0x000000);
@@ -310,6 +334,10 @@ function Building (config) {
 
 	_this.fire = function () {
 		var type = _this.projectileQueue.pop();
+
+		if (_this.target.type === null) {
+			_this.target = _this.platform.findTarget();
+		}
 
 		app.currentScene.addEntity(new Projectile({
 			silo: _this,
