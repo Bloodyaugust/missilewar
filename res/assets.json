@@ -11,7 +11,8 @@
         "/img/generator-solar.png",
         "/img/silo-rocket.png",
         "/img/projectile-rocket.png",
-        "/img/projectile-hrocket.png"
+        "/img/projectile-hrocket.png",
+        "/img/shield.png"
     ],
 
     "sounds": [

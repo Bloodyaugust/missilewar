@@ -79,6 +79,8 @@ function start() {
 				trim: 0x0000FF
 			}));
 			app.currentScene.addEntity(new Player());
+
+			app.currentScene.stage.setBackgroundColor(0x000000);
 		}, app);
 
 		var scoreScene = new SL.Scene('score', [], function(entities) {
@@ -128,7 +130,7 @@ function Projectile (config) {
 	}
 
 	_this.update = function () {
-		if (!_this.target || _this.target.state === "exploding" || _this.target.state === "exploded") {
+		if ((!_this.target || _this.target.state === "exploding" || _this.target.state === "exploded" || _this.target.state === null) && _this.state !== 'exploded') {
 			_this.state = 'exploding';
 		}
 
@@ -333,11 +335,14 @@ function Platform (config) {
 	_this.maxShield = PLATFORM_INITIAL_MAX_SHIELD;
 	_this.shield = _this.maxShield;
 	_this.shieldState = 'active';
+	_this.shieldSprite = new PIXI.Sprite(app.assetCollection.getTexture('shield'));
+	_this.shieldSprite.anchor = new SL.Vec2(0.5, 0.5);
 	_this.energy = PLATFORM_INITIAL_ENERGY;
 	_this.buildings = config.buildings || [];
 	_this.tiles = config.tiles || [];
 	_this.corePosition = config.position.clone();
 	_this.facing = config.facing || {x: 1, y: 1};
+	_this.command = null;
 
 	for (var i = 0; i < typeBase.length; i++) {
 		maxDistance = Math.abs(typeBase[i].x) > maxDistance ? Math.abs(typeBase[i].x) : maxDistance;
@@ -355,6 +360,10 @@ function Platform (config) {
 				platform: _this,
 				tile: _this.tiles[i]
 			});
+
+			if (typeBase[i].building.type === "command") {
+				_this.command = _this.tiles[i].building;
+			}
 		}
 
 		app.currentScene.addEntity(_this.tiles[i]);
@@ -363,13 +372,23 @@ function Platform (config) {
 		}
 	}
 
-	_this.collider = new SL.Circle(_this.corePosition, maxDistance * TILE_SIZE.x);
+	_this.collider = new SL.Circle(_this.command.collider.origin, (maxDistance + 2) * TILE_SIZE.x);
+	_this.shieldSprite.width = _this.collider.diameter;
+	_this.shieldSprite.height = _this.collider.diameter;
+	_this.shieldSprite.position = _this.command.collider.origin.clone();
+
+	app.currentScene.camera.addChild(_this.shieldSprite);
 
 	_this.update = function () {
 		_this.energy += PLATFORM_PASSIVE_ENERGY_INCOME * app.deltaTime;
 
+		if (_this.shieldState === "active") {
+			_this.shieldSprite.alpha = SL.Tween.lerp(0, 1, _this.shield/_this.maxShield);
+		}
+
 		if (_this.shield <= 0) {
 			_this.shieldState = 'recharging';
+			_this.shieldSprite.alpha = 0;
 		} else if (_this.shieldState === 'recharging') {
 			if (_this.shield >= _this.maxShield * 0.25) {
 				_this.shieldState = 'active';
