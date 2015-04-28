@@ -28,19 +28,19 @@
 
     "platforms": {
         "basic": [
-            {"x": 0, "y": 0},
-            {"x": 1, "y": 1},
-            {"x": 0, "y": 1},
-            {"x": -1, "y": 1},
+            {"x": 0, "y": 0, "building": {"type": "silo", "subType": "rocket"}},
+            {"x": 1, "y": 1, "building": {"type": "booster", "subType": "fast"}},
+            {"x": 0, "y": 1, "building": {"type": "silo", "subType": "rocket"}},
+            {"x": -1, "y": 1, "building": {"type": "booster", "subType": "fast"}},
             {"x": -2, "y": 2},
-            {"x": -1, "y": 2},
-            {"x": 0, "y": 2, "building": "generator-solar"},
-            {"x": 1, "y": 2},
+            {"x": -1, "y": 2, "building": {"type": "silo", "subType": "rocket"}},
+            {"x": 0, "y": 2, "building": {"type": "generator", "subType": "solar"}},
+            {"x": 1, "y": 2, "building": {"type": "silo", "subType": "rocket"}},
             {"x": 2, "y": 2},
             {"x": -3, "y": 3},
             {"x": -2, "y": 3},
             {"x": -1, "y": 3},
-            {"x": 0, "y": 3, "building": "command"},
+            {"x": 0, "y": 3, "building": {"type": "command", "subType": null}},
             {"x": 1, "y": 3},
             {"x": 2, "y": 3},
             {"x": 3, "y": 3}
@@ -50,7 +50,9 @@
     "buildings": {
         "silo": {
             "rocket": {
-                "reload": 5,
+                "interval": 5,
+                "fireDelay": 0.5,
+                "capacity": 5,
                 "cost": 100,
                 "health": 100,
                 "display": "Rocket Silo",
@@ -60,37 +62,40 @@
         },
         "booster": {
             "small": {
-                "interval": 4.5,
-                "amount": 15,
+                "interval": 5,
+                "regenAmount": 5,
+                "boostAmount": 30,
                 "cost": 50,
                 "health": 50,
                 "upgrades": ["basic"],
                 "display": "Small Shield Booster"
             },
             "basic": {
-                "interval": 4,
-                "amount": 40,
+                "interval": 4.5,
+                "regenAmount": 12,
+                "boostAmount": 70,
                 "cost": 150,
                 "health": 200,
                 "upgrades": ["fast"],
                 "display": "Shield Booster"
             },
             "fast": {
-                "interval": 4,
-                "amount": 40,
+                "interval": 2.5,
+                "regenAmount": 8,
+                "boostAmount": 70,
                 "cost": 150,
                 "health": 200,
                 "upgrades": [],
-                "display": "Shield Booster"
+                "display": "Fast Shield Booster"
             }
         },
         "generator": {
-            "basic": {
+            "solar": {
                 "interval": 5,
                 "amount": 10,
                 "cost": 500,
                 "health": 200,
-                "display": "Generator"
+                "display": "Solar Generator"
             }
         },
         "command": {

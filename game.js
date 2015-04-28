@@ -4,11 +4,11 @@ PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
 
 var SCREEN_SIZE = new SL.Vec2(document.documentElement.clientWidth, document.documentElement.clientHeight),
 	TILE_SIZE = new SL.Vec2(64, 64),
-	PLATFORM_SHIELD_SIZE = 384,
 	PLATFORM_INITIAL_MAX_SHIELD = 100,
 	PLATFORM_INITIAL_ENERGY = 500,
 	PLATFORM_PASSIVE_ENERGY_INCOME = 2,
 	CAMERA_PAN_SPEED = 200,
+	DEGREES_TO_RADIANS = 0.0174532925,
 	KEYS = {
 		"up": 87,
 		"down": 83,
@@ -106,18 +106,20 @@ function start() {
 
 function Projectile (config) {
 	var _this = this,
-		assetConfig = app.currentScene.assetCollection.assets.projectiles[config.type];
+		assetConfig = app.assetCollection.assets.projectiles[config.type];
 
-	_this.sprite = new PIXI.Sprite(app.assetCollection.getTexture(config.type));
-	_this.sprite.position = config.position.clone();
-	_this.sprite.origin = new Vec2(_this.sprite.texture.width / 2, _this.sprite.texture.height / 2);
-	_this.sprite.rotation = config.rotation;
-	_this.sprite.shader = SHADER_COLOR;
-	_this.collider = new SL.Circle(_this.sprite.origin.getTranslated(new SL.Vec2(0, -_this.sprite.texture.height / 2)).rotate(_this.sprite.origin, _this.sprite.rotation), 2);
 	_this.silo = config.silo;
 	_this.state = 'idle';
 	_this.tag = 'projectile';
 	_this.type = config.type;
+	_this.target = config.target;
+	_this.sprite = new PIXI.Sprite(app.assetCollection.getTexture('projectile-' + config.type));
+	_this.sprite.position = _this.silo.collider.origin.clone();
+	_this.sprite.origin = new SL.Vec2(0.5, 0.5);
+	_this.sprite.rotation = (180 + _this.sprite.position.angleBetween(_this.target.collider.origin)) * DEGREES_TO_RADIANS;
+	_this.sprite.shader = new ColorReplaceFilter(0xFFFFFF, config.silo.platform.trim, 0.1);
+	_this.collider = new SL.Circle(_this.sprite.position, 2);
+	_this.direction = _this.sprite.position.getDirectionVector(_this.target.collider.origin);
 
 	for (var key in assetConfig) {
 		if (assetConfig.hasOwnProperty(key)) {
@@ -126,34 +128,25 @@ function Projectile (config) {
 	}
 
 	_this.update = function () {
-		var platforms = app.currentScene.getEntitiesByTag('platform'),
-			buildings = app.currentScene.getEntitiesByTag('building');
+		if (!_this.target || _this.target.state === "exploding" || _this.target.state === "exploded") {
+			_this.state = 'exploding';
+		}
 
 		if (_this.state !== 'exploding' && _this.state !== 'exploded') {
-			_this.sprite.position.translateAlongRotation(_this.speed * app.deltaTime, _this.sprite.rotation);
-			_this.collider.location.translateAlongRotation(_this.speed * app.deltaTime, _this.sprite.rotation);
+			_this.sprite.position.translate(_this.direction.getScaled(_this.speed * app.deltaTime));
+			_this.collider.translate(_this.direction.getScaled(_this.speed * app.deltaTime));
 
-			for (var i = 0; i < platforms.length; i++) {
-				if (platforms[i].entityID !== _this.silo.platform.entityID &&
-				_this.collider.intersects(platforms[i].collider)) {
-					platforms[i].shield -= _this.damage;
-
-					_this.state = 'exploding';
-					break;
-				}
+			if(_this.target.platform.collider.intersects(_this.collider) && _this.target.platform.shieldState === "active") {
+				_this.state = 'exploding';
+				_this.target.platform.shield -= _this.damage;
+			} else if (_this.target.collider.intersects(_this.collider)) {
+				_this.state = 'exploding';
+				_this.target.health -= _this.damage;
 			}
-
-			if (_this.state !== 'exploding') {
-				for (i = 0; i < buildings.length; i++) {
-					if (buildings[i].entityID !== _this.silo.platform.entityID &&
-					_this.collider.intersects(buildings[i].collider)) {
-						buildings[i].health -= _this.damage;
-
-						_this.state = 'exploding';
-						break;
-					}
-				}
-			}
+		} else if (_this.state === "exploding") {
+			_this.state = "exploded";
+		} else if (_this.state === "exploded") {
+			app.currentScene.removeEntity(_this);
 		}
 	};
 }
@@ -213,11 +206,69 @@ function Building (config) {
 	for (var key in assetConfig) {
 		if (assetConfig.hasOwnProperty(key)) {
 			_this[key] = assetConfig[key];
+
+			if (key === "interval") {
+				_this.timeToEvent = assetConfig[key];
+			}
 		}
 	}
 
-	_this.update = function () {
+	if (_this.type === "booster") {
+		_this.platform.maxShield += _this.boostAmount;
+	}
 
+	if (_this.type === "silo") {
+		_this.projectileQueue = [_this.autofire];
+		_this.timeToFire = _this.fireDelay;
+		_this.target = null;
+	}
+
+	_this.update = function () {
+		if (_this.health <= 0 && _this.state !== "exploded") {
+			_this.state = "exploding";
+		}
+
+		if (_this.state === "idle") {
+			_this.timeToEvent !== undefined && _this.timeToEvent !== null ? _this.timeToEvent -= app.deltaTime : null;
+		}
+
+		if (_this.state !== "exploding" && _this.state !== "exploded") {
+			if (_this.timeToEvent !== undefined && _this.timeToEvent !== null && _this.timeToEvent <= 0) {
+				if (_this.type === "generator") {
+					_this.platform.energy += _this.amount;
+				} else if (_this.type === "silo") {
+					_this.target = _this.platform.findTarget();
+					_this.state = "firing";
+					_this.timeToFire = 0;
+				} else if (_this.type === "booster") {
+					_this.platform.regenShield(_this.regenAmount);
+				}
+
+				_this.timeToEvent = _this.interval;
+			}
+
+			if (_this.state === "firing") {
+				_this.timeToFire -= app.deltaTime;
+
+				 if (_this.timeToFire <= 0) {
+					if (_this.projectileQueue.length === 0) {
+						_this.state = "idle";
+						_this.queueProjectile(_this.autofire);
+						_this.timeToFire = 0;
+					} else {
+						_this.fire();
+						_this.timeToFire = _this.fireDelay;
+					}
+				}
+			}
+		} else if (_this.state !== "exploded") {
+			_this.state = "exploded";
+		} else {
+			if (_this.type !== "command") {
+				_this.tile.building = null;
+				app.currentScene.removeEntity(_this);
+			}
+		}
 	};
 
 	_this.upgrade = function (subType) {
@@ -232,6 +283,8 @@ function Building (config) {
 		}
 
 		if (hasUpgrade) {
+			_this.platform.maxShield -= _this.type === "booster" ? _this.boostAmount : 0;
+
 			_this.subType = subType;
 			_this.sprite.setTexture(app.assetCollection.getTexture(_this.type + '-' + _this.subType));
 			assetConfig = app.assetCollection.assets.buildings[_this.type][_this.subType];
@@ -241,13 +294,37 @@ function Building (config) {
 					_this[key] = assetConfig[key];
 				}
 			}
+
+			_this.platform.maxShield += _this.type === "booster" ? _this.boostAmount : 0;
 		}
+	};
+
+	_this.queueProjectile = function (type) {
+		if (_this.projectileQueue.length < _this.capacity && _this.state !== "firing" && _this.platform.energy - app.assetCollection.assets.projectiles[type].cost > 0) {
+			_this.projectileQueue.push(type);
+			_this.platform.energy -= app.assetCollection.assets.projectiles[type].cost;
+		}
+	};
+
+	_this.fire = function () {
+		var type = _this.projectileQueue.pop();
+
+		app.currentScene.addEntity(new Projectile({
+			silo: _this,
+			type: type,
+			target: _this.target
+		}));
+	};
+
+	_this.sell = function () {
+
 	};
 }
 
 function Platform (config) {
 	var _this = this,
 		typeBase = app.assetCollection.assets.platforms[config.type],
+		maxDistance = 0,
 		building;
 
 	_this.tag = 'platform';
@@ -255,14 +332,17 @@ function Platform (config) {
 	_this.trim = config.trim;
 	_this.maxShield = PLATFORM_INITIAL_MAX_SHIELD;
 	_this.shield = _this.maxShield;
+	_this.shieldState = 'active';
 	_this.energy = PLATFORM_INITIAL_ENERGY;
 	_this.buildings = config.buildings || [];
 	_this.tiles = config.tiles || [];
 	_this.corePosition = config.position.clone();
-	_this.collider = new SL.Circle(_this.corePosition, PLATFORM_SHIELD_SIZE);
 	_this.facing = config.facing || {x: 1, y: 1};
 
 	for (var i = 0; i < typeBase.length; i++) {
+		maxDistance = Math.abs(typeBase[i].x) > maxDistance ? Math.abs(typeBase[i].x) : maxDistance;
+		maxDistance = Math.abs(typeBase[i].y) > maxDistance ? Math.abs(typeBase[i].y) : maxDistance;
+
 		_this.tiles.push(new Tile({
 			position: config.position.getTranslated(new SL.Vec2(_this.facing.x * typeBase[i].x * TILE_SIZE.x, _this.facing.y * typeBase[i].y * TILE_SIZE.y)),
 			platform: _this
@@ -270,7 +350,8 @@ function Platform (config) {
 
 		if (typeBase[i].building) {
 			_this.tiles[i].building = new Building({
-				type: typeBase[i].building,
+				type: typeBase[i].building.type,
+				subType: typeBase[i].building.subType,
 				platform: _this,
 				tile: _this.tiles[i]
 			});
@@ -282,8 +363,49 @@ function Platform (config) {
 		}
 	}
 
+	_this.collider = new SL.Circle(_this.corePosition, maxDistance * TILE_SIZE.x);
+
 	_this.update = function () {
 		_this.energy += PLATFORM_PASSIVE_ENERGY_INCOME * app.deltaTime;
+
+		if (_this.shield <= 0) {
+			_this.shieldState = 'recharging';
+		} else if (_this.shieldState === 'recharging') {
+			if (_this.shield >= _this.maxShield * 0.25) {
+				_this.shieldState = 'active';
+			}
+		}
+	};
+
+	_this.regenShield = function (amount) {
+		_this.shield = _this.shield + amount > _this.maxShield ? _this.maxShield : _this.shield + amount;
+	};
+
+	_this.findTarget = function () {
+		var platforms = app.currentScene.getEntitiesByTag('platform'),
+			targetPlatform, targetBuilding, commandBuilding;
+
+		for (var i = 0; i < platforms.length; i++) {
+			if (platforms[i].entityID !== _this.entityID) {
+				targetPlatform = platforms[i];
+				break;
+			}
+		}
+
+		for (i = 0; i < targetPlatform.tiles.length; i++) {
+			if (targetPlatform.tiles[i].building) {
+				if (targetPlatform.tiles[i].building.type === "command") {
+					commandBuilding = targetPlatform.tiles[i].building;
+				} else {
+					targetBuilding = targetPlatform.tiles[i].building;
+					break;
+				}
+			}
+		}
+
+		targetBuilding = targetBuilding ? targetBuilding : commandBuilding;
+
+		return targetBuilding;
 	};
 }
 
@@ -381,13 +503,15 @@ function Player () {
 			_this.previousSelection = null;
 
 			_this.updateSelectionUI();
+		} else {
+			_this.selection.queueProjectile(e.currentTarget.dataset.subtype);
 		}
 	};
 
 	_this.updateUI = function () {
 		_this.time += app.deltaTime;
 		window['play-time'].innerHTML = Math.floor(_this.time / 60).toString() + ':' + (_this.time % 60 < 10 ? '0' + Math.floor(_this.time % 60) : Math.floor(_this.time % 60));
-		window['player-platform-shield'].innerHTML = Math.floor(_this.platform.shield);
+		window['player-platform-shield'].innerHTML = Math.floor(_this.platform.shield) + '/' + Math.floor(_this.platform.maxShield);
 		window['player-platform-energy'].innerHTML = Math.floor(_this.platform.energy);
 
 		//TODO: write selection stat update code
